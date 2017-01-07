@@ -2,47 +2,23 @@
 
 namespace Ds\Bundle\SSOLinkedinBundle\Security\Core\User;
 
+use Ds\Bundle\SSOBundle\Security\Core\User\AbstractOAuthUserProvider;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
-use Oro\Bundle\ConfigBundle\Config\ConfigManager;
-use Oro\Bundle\UserBundle\Entity\UserManager;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Exception;
+use RuntimeException;
 
 /**
- * Class OAuthUserProvider
+ * Class LinkedinOAuthUserProvider
  */
-class OAuthUserProvider implements OAuthAwareUserProviderInterface
+class LinkedinOAuthUserProvider extends AbstractOAuthUserProvider
 {
-    /**
-     * @var \Oro\Bundle\UserBundle\Entity\UserManager
-     */
-    protected $userManager;
-
-    /**
-     * @var \Oro\Bundle\ConfigBundle\Config\ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * Constructor
-     *
-     * @param \Oro\Bundle\UserBundle\Entity\UserManager   $userManager
-     * @param \Oro\Bundle\ConfigBundle\Config\ConfigManager $configManager
-     */
-    public function __construct(UserManager $userManager, ConfigManager $configManager)
-    {
-        $this->userManager = $userManager;
-        $this->configManager = $configManager;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         if (!$this->configManager->get('ds_sso_linkedin.enable_sso')) {
-            throw new Exception('SSO is not enabled');
+            throw new RuntimeException('SSO is not enabled');
         }
 
         $username = $response->getUsername();

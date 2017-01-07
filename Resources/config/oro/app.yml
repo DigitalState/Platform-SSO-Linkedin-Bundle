@@ -6,14 +6,10 @@ hwi_oauth:
             client_id: LinkedInClientId
             client_secret: LinkedInClientSecret
             scope: "r_basicprofile r_emailaddress"
+
 security:
     firewalls:
         main:
             oauth:
                 resource_owners:
                     linkedin: /login/check-linkedin
-                login_path: oro_user_security_login
-                failure_path: oro_user_security_login
-                check_path: oro_user_security_check
-                oauth_user_provider:
-                    service: oro_sso.oauth_provider
