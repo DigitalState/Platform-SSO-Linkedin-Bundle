@@ -18,7 +18,7 @@
         "digitalstate/platform-linkedin-bundle": "dev-master"
     },
     "autoload": {
-        "psr-0": { "Ds\\Bundle\\SSOLinkedinBundle": "" }
+        "psr-4": { "Ds\\Bundle\\SSOLinkedinBundle\\": "" }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
