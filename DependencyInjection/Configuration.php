@@ -20,7 +20,15 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('ds_sso_linkedin');
 
         SettingsBuilder::append($rootNode, [
-            'enable_sso' => [
+            'enabled' => [
+                'value' => false,
+                'type' => 'boolean'
+            ],
+            'create_user' => [
+                'value' => false,
+                'type' => 'boolean'
+            ],
+            'associate_user' => [
                 'value' => false,
                 'type' => 'boolean'
             ]

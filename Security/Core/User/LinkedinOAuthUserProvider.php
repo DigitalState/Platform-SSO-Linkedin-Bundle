@@ -4,6 +4,7 @@ namespace Ds\Bundle\SSOLinkedinBundle\Security\Core\User;
 
 use Ds\Bundle\SSOBundle\Security\Core\User\AbstractOAuthUserProvider;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
+use Symfony\Component\Security\Core\Util\SecureRandom;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use RuntimeException;
 
@@ -18,29 +19,63 @@ class LinkedinOAuthUserProvider extends AbstractOAuthUserProvider
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         if (!$this->configManager->get('ds_sso_linkedin.enable_sso')) {
-            throw new RuntimeException('SSO is not enabled');
+            throw new RuntimeException('Linkedin single sign-on is not enabled.');
         }
 
         $username = $response->getUsername();
 
         if (null === $username) {
-            throw new BadCredentialsException('Bad credentials.');
+            throw new BadCredentialsException('Linkedin single sign-on authentication failed.');
         }
 
         $property = $response->getResourceOwner()->getName() . '_id';
         $user = $this->userManager->findUserBy([ $property => $username ]);
 
         if (!$user) {
-            $user = $this->userManager->findUserByEmail($response->getEmail());
-
-            if ($user) {
-                $user->setLinkedinId($username);
-                $this->userManager->updateUser($user);
+            if (!$this->configManager->get('ds_sso_linkedin.create_user')) {
+                throw new RuntimeException('Linkedin single sign-on user creation is not enabled.');
             }
+
+            $storageManager = $this->userManager->getStorageManager();
+            $repository = $storageManager->getRepository('OroUserBundle:Role');
+            $role = $repository->findOneBy([ 'role' => 'ROLE_USER' ]);
+
+            if (!$role) {
+                throw new RuntimeException('Role does not exist.');
+            }
+
+            $repository = $storageManager->getRepository('OroOrganizationBundle:BusinessUnit');
+            $owner = $repository->findOneBy([ 'name' => 'Main' ]);
+
+            if (!$owner) {
+                throw new RuntimeException('Business unit does not exist.');
+            }
+
+            $generator = new SecureRandom();
+
+            $user = $this->userManager->createUser();
+            $user
+                ->setUsername($response->getEmail())
+                ->setPlainPassword($generator->nextBytes(20))
+                ->setEmail($response->getEmail())
+                ->setFirstName('dd')
+                ->setLastName('ee')
+                ->addRole($role)
+                ->setOwner($owner)
+                ->setOrganization($owner->getOrganization())
+                ->addOrganization($owner->getOrganization())
+                ->setEnabled(true)
+                ->setLinkedinId($response->getUsername());
+            $this->userManager->updatePassword($user);
+            $this->userManager->updateUser($user);
         }
 
-        if (!$user || !$user->isEnabled()) {
-            throw new BadCredentialsException('Bad credentials.');
+        if (!$user) {
+            throw new RuntimeException('User does not exist.');
+        }
+
+        if (!$user->isEnabled()) {
+            throw new RuntimeException('User is not enabled.');
         }
 
         return $user;

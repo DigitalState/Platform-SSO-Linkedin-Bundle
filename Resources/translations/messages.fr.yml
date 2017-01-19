@@ -4,4 +4,6 @@ ds:
             groups:
                 sso_linkedin_settings: Authentification unique LinkedIn
             fields:
-                enable_sso: Activer
+                enabled: Activer
+                create_user: Autoriser la création de l'utilisateur lors de la connexion
+                associate_user: Autoriser l'association des utilisateurs lors de la connexion
