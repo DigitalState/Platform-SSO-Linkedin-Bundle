@@ -7,3 +7,8 @@ ds:
                 enabled: Activer
                 create_user: Autoriser la création de l'utilisateur lors de la connexion
                 associate_user: Autoriser l'association des utilisateurs lors de la connexion
+
+oro:
+    user:
+        linkedin_id:
+            label: Id LinkedIn
