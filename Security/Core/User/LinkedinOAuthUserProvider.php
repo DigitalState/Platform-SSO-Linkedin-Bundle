@@ -4,6 +4,7 @@ namespace Ds\Bundle\SSOLinkedinBundle\Security\Core\User;
 
 use Ds\Bundle\SSOBundle\Security\Core\User\AbstractOAuthUserProvider;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
+use Ds\Bundle\SSOBundle\Event\SSO\User\CreatedEvent;
 use Symfony\Component\Security\Core\Util\SecureRandom;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use RuntimeException;
@@ -68,6 +69,9 @@ class LinkedinOAuthUserProvider extends AbstractOAuthUserProvider
                 ->setLinkedinId($response->getUsername());
             $this->userManager->updatePassword($user);
             $this->userManager->updateUser($user);
+
+            $event = new CreatedEvent($user);
+            $this->dispatcher->dispatch(CreatedEvent::NAME, $event);
         }
 
         if (!$user) {
