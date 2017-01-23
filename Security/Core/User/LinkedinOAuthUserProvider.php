@@ -29,7 +29,8 @@ class LinkedinOAuthUserProvider extends AbstractOAuthUserProvider
             throw new BadCredentialsException('Linkedin single sign-on authentication failed.');
         }
 
-        $property = $response->getResourceOwner()->getName() . '_id';
+        $resourceOwner = $response->getResourceOwner();
+        $property = $resourceOwner->getName() . '_id';
         $user = $this->userManager->findUserBy([ $property => $username ]);
 
         if (!$user) {
@@ -70,7 +71,7 @@ class LinkedinOAuthUserProvider extends AbstractOAuthUserProvider
             $this->userManager->updatePassword($user);
             $this->userManager->updateUser($user);
 
-            $event = new CreatedEvent($user);
+            $event = new CreatedEvent($user, $resourceOwner);
             $this->dispatcher->dispatch(CreatedEvent::NAME, $event);
         }
 
