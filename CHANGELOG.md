@@ -4,3 +4,4 @@ This changelog references the relevant changes (new features, changes and bugs) 
 
   * Added create_user and associate_user configuration options.
   * Added missing translations.
+  * Added sso login button.
