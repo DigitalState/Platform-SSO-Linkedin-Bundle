@@ -71,7 +71,7 @@ class LinkedinOAuthUserProvider extends AbstractOAuthUserProvider
             $this->userManager->updatePassword($user);
             $this->userManager->updateUser($user);
 
-            $event = new CreatedEvent($user, $resourceOwner);
+            $event = new CreatedEvent($user, $response);
             $this->dispatcher->dispatch(CreatedEvent::NAME, $event);
         }
 
