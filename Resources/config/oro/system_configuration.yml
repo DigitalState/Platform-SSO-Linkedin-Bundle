@@ -1,4 +1,4 @@
-oro_system_configuration:
+system_configuration:
     groups:
         ds_sso_linkedin_settings:
             title: ds.sso_linkedin.system_configuration.groups.sso_linkedin_settings
